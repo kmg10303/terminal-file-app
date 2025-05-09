@@ -7,7 +7,7 @@ This Python application processes folders of `.mp3` files, detects song structur
 ### 1. Clone or download the project folder  
 Place the folder anywhere on your machine.
 
-### 2. Set up Python environment (Python 3.8+ recommended)
+### 2. Set up Python environment (Python 3.10+ recommended)
 
 If you use `venv`
 ```bash

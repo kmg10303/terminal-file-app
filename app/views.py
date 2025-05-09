@@ -9,13 +9,16 @@ from pymusickit.key_finder import KeyFinder
 import tempfile
 import soundfile as sf
 from pydub import AudioSegment
+import warnings
 
 logger = logging.getLogger(__name__)
 
 def analyze_music_file(file_path):
     try:
         y, sr = librosa.load(file_path, sr=None, mono=True)
-        tempo, _ = librosa.beat.beat_track(y=y, sr=sr)
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            tempo, _ = librosa.beat.beat_track(y=y, sr=sr)
         key = KeyFinder(file_path).print_key()
         return {'bpm': round(tempo, 1), 'key': key}
     except Exception as e:
@@ -34,7 +37,7 @@ def beatmatch_audio(input_path, original_bpm, target_bpm):
         # Load the created file as AudioSegment
         audio = AudioSegment.from_file(temp_out)
         print(f"Beatmatched {input_path} from {original_bpm} to {target_bpm} BPM")
-        return audio
+        return temp_out
     except Exception as e:
         logger.warning(f"Beatmatching failed: {e}")
         return None

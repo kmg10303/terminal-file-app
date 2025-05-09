@@ -82,9 +82,9 @@ def generate_mashups_offline(input_dir, output_dir, output_format='zip'):
                         'Song A artist': song['artist'],
                         'Song A Key': song['key'],
                         'Song A Tempo': song['bpm'],
-                        'Song A vocal path': f"{zip_folder}/{song['name']}^{song['artist']}^{song['bpm']}^{song['key']}^Song B^{comp.capitalize()}.mp3" if 'full' in song['components'] else '',
-                        'Song A instrumental path': f"{zip_folder}/{s1['name']}^{s1['artist']}^{song['bpm']}^{s1['key']}^Song B^{comp.capitalize()}.mp3" if 'full' in song['components'] else '',
-                        'Song A full path': f"{zip_folder}/{song['name']}^{s1['artist']}^{song['bpm']}^{s1['key']}^Song B^{comp.capitalize()}.mp3" if 'full' in song['components'] else '',
+                        'Song A vocal path': f"{solo_folder}/{song['name']}^{song['artist']}^{song['bpm']}^{song['key']}^Song A^Vocals.mp3" if 'vocals' in song['components'] else '',
+                        'Song A instrumental path': f"{solo_folder}/{song['name']}^{song['artist']}^{song['bpm']}^{song['key']}^Song A^Instrumental.mp3" if 'instrumental' in song['components'] else '',
+                        'Song A full path': f"{solo_folder}/{song['name']}^{song['artist']}^{song['bpm']}^{song['key']}^Song A^Full.mp3" if 'full' in song['components'] else '',
                         'Song B title': '',
                         'Song B artist': '',
                         'Song B Key': '',
@@ -123,24 +123,16 @@ def generate_mashups_offline(input_dir, output_dir, output_format='zip'):
                                     target_bpm=new_bpm
                                 )
                             if adjusted:
-                                # Create a safe filename (replace spaces and special chars)
-                                safe_pair_id = f"{s1['name']}_TO_{s2['name']}_{comp}".replace(" ", "_").replace("^", "_")
-                                
-                                # Use persistent temp directory instead of mkdtemp()
-                                temp_out = os.path.join(output_dir, "temp_audio", f"adjusted_{safe_pair_id}.mp3")
-                                os.makedirs(os.path.dirname(temp_out), exist_ok=True)  # Ensure directory exists
-                                
-                                # Export the adjusted audio
-                                adjusted.export(temp_out, format="mp3")
-                                
-                                # Verify the file was created
-                                if not os.path.exists(temp_out):
-                                    print(f"Error: Failed to create {temp_out}")
-                                    continue
-                                
-                                # Add to files_to_zip
+                                # adjusted is already a filepath returned by beatmatch_audio
+                                dest_path = os.path.join(
+                                    output_dir, "temp_audio",
+                                    f"adjusted_{s1['name']}_TO_{s2['name']}_{comp}".replace(" ", "_").replace("^", "_") + ".mp3"
+                                )
+                                os.makedirs(os.path.dirname(dest_path), exist_ok=True)
+                                shutil.copy2(adjusted, dest_path)
+
                                 files_to_zip.append({
-                                    'source_path': temp_out,  # Use the actual exported file
+                                    'source_path': dest_path,
                                     'zip_path': os.path.join(
                                         mashup_folder,
                                         f"{s2['name']}^{s2['artist']}^{new_bpm}^{s2['key']}^Song B^{comp.capitalize()}.mp3"
@@ -152,20 +144,20 @@ def generate_mashups_offline(input_dir, output_dir, output_format='zip'):
                         'Song A artist': s1['artist'],
                         'Song A Key': s1['key'],
                         'Song A Tempo': s1['bpm'],
-                        'Song A vocal path': f"{zip_folder}/{s1['name']}^{s1['artist']}^{new_bpm}^{s1['key']}^Song B^{comp.capitalize()}.mp3" if 'full' in s1['components'] else '',
-                        'Song A instrumental path': f"{zip_folder}/{s1['name']}^{s1['artist']}^{new_bpm}^{s1['key']}^Song B^{comp.capitalize()}.mp3" if 'full' in s1['components'] else '',
-                        'Song A full path': f"{zip_folder}/{s1['name']}^{s1['artist']}^{new_bpm}^{s1['key']}^Song B^{comp.capitalize()}.mp3" if 'full' in s1['components'] else '',
+                        'Song A vocal path': f"{zip_folder}/{s1['name']}^{s1['artist']}^{new_bpm}^{s1['key']}^Song A^Vocals.mp3" if 'vocals' in s1['components'] else '',
+                        'Song A instrumental path': f"{zip_folder}/{s1['name']}^{s1['artist']}^{new_bpm}^{s1['key']}^Song A^Instrumental.mp3" if 'instrumental' in s1['components'] else '',
+                        'Song A full path': f"{zip_folder}/{s1['name']}^{s1['artist']}^{new_bpm}^{s1['key']}^Song A^Full.mp3" if 'full' in s1['components'] else '',
                         'Song B title': s2['name'],
                         'Song B artist': s2['artist'],
                         'Song B Key': s2['key'],
                         'Song B Tempo': s2['bpm'],
-                        'Song B vocal path': f"{zip_folder}/{s1['name']}^{s1['artist']}^{new_bpm}^{s1['key']}^Song B^{comp.capitalize()}.mp3" if 'vocals' in s1['components'] else '',
-                        'Song B instrumental path': f"{zip_folder}/{s1['name']}^{s1['artist']}^{new_bpm}^{s1['key']}^Song B^{comp.capitalize()}.mp3" if 'instrumental' in s1['components'] else '',
-                        'Song B full path': f"{zip_folder}/{s1['name']}^{s1['artist']}^{new_bpm}^{s1['key']}^Song B^{comp.capitalize()}.mp3" if 'full' in s1['components'] else ''
+                        'Song B vocal path': f"{zip_folder}/{s2['name']}^{s2['artist']}^{new_bpm}^{s2['key']}^Song B^Vocals.mp3" if 'vocals' in s2[ 'components'] else '',
+                        'Song B instrumental path': f"{zip_folder}/{s2['name']}^{s2['artist']}^{new_bpm}^{s2['key']}^Song B^Instrumental.mp3" if 'instrumental' in s2['components'] else '',
+                        'Song B full path': f"{zip_folder}/{s2['name']}^{s2['artist']}^{new_bpm}^{s2['key']}^Song B^Full.mp3" if 'full' in s2['components'] else ''
                     })
 
     # Write CSV
-    csv_path = os.path.join(output_dir, 'mashup_summary.csv')
+    csv_path = os.path.join(output_dir, 'mu_prep_summary.csv')
     with open(csv_path, 'w', newline='') as csvfile:
         fieldnames = [
             'Song A title', 'Song A artist', 'Song A Key', 'Song A Tempo',
@@ -175,26 +167,33 @@ def generate_mashups_offline(input_dir, output_dir, output_format='zip'):
         ]
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
         writer.writeheader()
-        writer.writerows(csv_data)
+        for row in csv_data:
+            # Convert absolute paths to relative if needed
+            for key in row:
+                if 'path' in key and row[key]:
+                    row[key] = os.path.relpath(row[key], output_dir)
+            writer.writerow(row)
     
     print(f"Metadata summary written to: {csv_path}")
 
    # Write to ZIP
     if output_format == 'zip':
-        zip_path = os.path.join(output_dir, 'mashups.zip')
-        with ZipFile(zip_path, 'w') as zipf:
-            for item in files_to_zip:
-                src = item['source_path']
-                dest = item['zip_path']
-                if os.path.exists(src):
-                    zipf.write(src, arcname=dest)
-                else:
-                    print(f"Warning: Source file {src} does not exist. Skipping.")
-        print(f"Output written to: {zip_path}")
+        for item in files_to_zip:
+            src = item['source_path']
+            dest = os.path.join(output_dir, item['zip_path'])
+            
+            # Create destination directory
+            os.makedirs(os.path.dirname(dest), exist_ok=True)
+            
+            # Copy or move the file
+            if os.path.exists(src):
+                shutil.copy2(src, dest)  # copy2 preserves metadata
+            else:
+                print(f"Warning: Source file missing: {src}")
 
     # Clean up temporary files
     try:
-        shutil.rmtree(temp_dir)
+        shutil.rmtree(temp_dir, ignore_errors=True)
         print(f"Cleaned up temporary files in {temp_dir}")
     except Exception as e:
         print(f"Warning: Could not delete temp directory {temp_dir}: {e}")
