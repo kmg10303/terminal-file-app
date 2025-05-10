@@ -1,37 +1,57 @@
-# Audio Mashup Console App
+# BOT FEEDER: Mu Prep Instructions
 
-This Python application processes folders of `.mp3` files, detects song structure, and generates tempo-matched mashups between songs of similar key and tempo.
+## Installation
 
-## Setup Instructions
+1. **Download the Code**  
+   Open [GitHub](#).  
+   Click **Code** > **Download ZIP**.  
+   Extract the ZIP in your `Downloads` folder.
 
-### 1. Clone or download the project folder  
-Place the folder anywhere on your machine.
+2. **Set Up Project Directory**  
+   Navigate to the extracted folder:  
+   `cd ~/Downloads/terminal-file-app-main`
 
-### 2. Set up Python environment (Python 3.10+ recommended)
+3. **Add Input Songs**  
+   Open the `input_songs` folder.  
+   Place songs inside folders named as `[Artist] - [Song Title]`.  
+   You may include:  
+   - Vocal only  
+   - Instrumental only  
+   - Vocal + Instrumental
 
-If you use `venv`
-```bash
-python3 -m venv env
-source env/bin/activate
-env\Scripts\activate 
-```
+4. **Set Up Python Environment**
+   ```
+   python3.11 -m venv venv
+   source venv/bin/activate
+   ```
 
-### 3. Install Dependencies
+5. **Install Dependencies**
+   ```
+   pip install -r requirements.txt
+   ```
 
-pip install -r requirements.txt
+## Execution
 
-### 4. Organize input songs
+1. Ensure your terminal is in the project root:
+   ```
+   cd ~/Downloads/terminal-file-app-main
+   ```
 
-Place your .mp3 files in a folder (e.g. input_songs/).
+2. Activate virtual environment:
+   ```
+   source venv/bin/activate
+   ```
 
-Files should follow naming like:
-Artist - Title - Vocal.mp3
-Artist - Title - Instrumental.mp3
-Artist - Title - Full Vocal and Instrumental.mp3
+3. Run the script:
+   ```
+   python3 main.py
+   ```
 
-Each unique mashup group should be consistently named.
+4. View output:
+   ```
+   cd output
+   ls
+   ```
 
-### 5. Run
-
-python main.py
-
+5. A summary CSV is generated in `~/Downloads`:  
+   - `mu_prep_summary.csv`
